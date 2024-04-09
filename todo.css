@@ -56,6 +56,12 @@ body {
   }
 
 
+/* Add strikethrough effect 
+.task-item.completed .task-text {
+    text-decoration: line-through;   
+}
+*/
+
 .add-button {
     padding: 10px 20px;
     background-color: #d3bf95;
