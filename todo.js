@@ -3,27 +3,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskInput = document.querySelector('.task-input');
     const taskList = document.querySelector('.task-list');
 
-    let tasks = [];
 
-    function addTask(task, date) {
+    // Add task
+    function addTask(task, creationDateTime) {
         const taskItem = document.createElement('li');
         taskItem.classList.add('task-item');
-        taskItem.innerHTML = `<div class="task-text">${task}</div>
-                              <div class="task-date">${date}</div>
-                              <div class="action-buttons">
-                                <button class="edit-button">Edit</button>
-                                <button class="save-button" style="display: none;">Save</button>
-                                <button class="delete-button">Delete</button>
-                              </div>`;
+        taskItem.innerHTML = `
+            <img class="toggle-image" src="./image/off.png" style="width:20px; cursor:pointer;">
+            <div class="task-text">${task}</div>
+            <div class="task-date">${creationDateTime}</div>
+            <div class="action-buttons">
+                <button class="edit-button">Edit</button>
+                <button class="save-button" style="display: none;">Save</button>
+                <button class="delete-button">Delete</button>
+            </div>
+        `;
         taskList.appendChild(taskItem);
-        tasks.push(taskItem);
     }
 
+
+// Delete task
     function deleteTask(taskItem) {
         taskItem.remove();
-        tasks = tasks.filter(item => item !== taskItem);
     }
 
+
+// Edit task
     function editTask(taskItem) {
         const taskText = taskItem.querySelector('.task-text');
         const editInput = document.createElement('input');
@@ -48,28 +53,44 @@ document.addEventListener('DOMContentLoaded', () => {
         taskItem.classList.toggle('completed'); // Toggle the completed class
     }
 
+
+//Toggle images (checkbox blank and checkbox marked)
+    function toggleCheckbox(toggleImage) {
+        const currentSrc = toggleImage.getAttribute('src');
+        if (currentSrc.includes('off.png')) {
+            toggleImage.src = './image/on.png';
+        } else {
+            toggleImage.src = './image/off.png';
+        }
+    }
+    
+    
+//Date and time stamp
     addTaskForm.addEventListener('submit', e => {
         e.preventDefault();
         const newTask = taskInput.value.trim();
-        const currentDate = new Date().toLocaleDateString(); // Input current date
+        const currentDate = new Date();
+        const creationDateTime = `${currentDate.toLocaleDateString()} ${currentDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
         if (newTask !== '') {
-            addTask(newTask, currentDate);
+            addTask(newTask, creationDateTime);
             taskInput.value = '';
         }
     });
 
     taskList.addEventListener('click', e => {
-        if (e.target.classList.contains('delete-button')) {
-            const taskItem = e.target.closest('.task-item');
+        const target = e.target;
+        const taskItem = target.closest('.task-item');
+        if (!taskItem) return;
+
+        if (target.classList.contains('delete-button')) {
             deleteTask(taskItem);
-        } else if (e.target.classList.contains('edit-button')) {
-            const taskItem = e.target.closest('.task-item');
+        } else if (target.classList.contains('edit-button')) {
             editTask(taskItem);
-        } else if (e.target.classList.contains('task-text')) {
-            const taskItem = e.target.closest('.task-item');
+        } else if (target.classList.contains('task-text')) {
             toggleTaskCompletion(taskItem);
+        } else if (target.classList.contains('toggle-image')) {
+            const toggleImage = target;
+            toggleCheckbox(toggleImage);
         }
     });
 });
-
-
